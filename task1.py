@@ -29,7 +29,7 @@ def featureExtraction():
         else:
             title=0
         innerFeature.append(title)
-        tokens=nltk.tokenize.word_tokenize(item[2].lower())
+        tokens=nltk.tokenize.word_tokenize(item[1].lower())
         health=0
         product=0
         review=0
