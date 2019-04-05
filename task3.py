@@ -30,8 +30,8 @@ def featureExtractionTask3():
             label=8
 
         if label != 8:
-            tokens=nltk.tokenize.word_tokenize(item[2].lower())
-            posTag=nltk.pos_tag(item[2].lower())
+            tokens=nltk.tokenize.word_tokenize(item[1].lower())
+            posTag=nltk.pos_tag(item[1].lower())
 
             health=0
             legal=0
