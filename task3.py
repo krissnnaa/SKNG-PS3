@@ -1,7 +1,6 @@
 import nltk
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
-from imblearn.over_sampling import RandomOverSampler
 
 def featureExtractionTask3():
     with open('PS3_training_data.txt','r') as fd:
@@ -95,6 +94,19 @@ def featureExtractionTask3():
             featureWithLabel.append(tupleFeature)
     return featureWithLabel
 
+def LinearSVMClassifier(X,y,x_test,y_test):
+    clf=LinearSVC(random_state=0).fit(X, y)
+    clf.predict(x_test)
+    accuracyScore = clf.score(x_test, y_test)
+    print('Linear SVC accuracy score for test set=%0.2f' % accuracyScore)
+
+def ensembleClassifier(X,y,x_test,y_test):
+    clf=RandomForestClassifier(n_estimators=10,random_state=0).fit(X, y)
+    clf.predict(x_test)
+    accuracyScore = clf.score(x_test, y_test)
+    print('Ensemble Random Forest  accuracy score for test set=%0.2f' % accuracyScore)
+
+ 
 if __name__=='__main__':
     labelFeature=featureExtractionTask3()
     x_train = [l[0] for l in labelFeature]
