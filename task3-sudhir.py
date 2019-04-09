@@ -87,7 +87,7 @@ def count_matrix(features):
 
 
 def featureExtraction(texts, classes, feature_level='unigram'):
-    # N - gram Level Bag of words
+    # N - gram Level bag of words
     class_list = []
     class_dict = {}
 
@@ -224,10 +224,13 @@ def perform_operations(file_name):
     for idx, line in enumerate(data.split("\n")):
         line_contents = line.split('\t')
         if any(line_contents):
+            # task-3. escape 'none' label class rows.
+            if line_contents[3].lower() == 'none':
+                continue
             # text
             texts.append(line_contents[1])
-            # GENRE
-            classes.append(line_contents[4])
+            # reason
+            classes.append(line_contents[3])
 
     del data
     global CLASS_NAMES

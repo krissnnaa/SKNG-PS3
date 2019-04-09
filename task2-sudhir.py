@@ -226,8 +226,8 @@ def perform_operations(file_name):
         if any(line_contents):
             # text
             texts.append(line_contents[1])
-            # GENRE
-            classes.append(line_contents[4])
+            # sentiment
+            classes.append(line_contents[2])
 
     del data
     global CLASS_NAMES
