@@ -24,7 +24,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
-
+from sklearn import metrics
+from operator import itemgetter
 
 # from collections import defaultdict
 # from nltk.stem import WordNetLemmatizer
@@ -42,6 +43,9 @@ def featureSelection(texts, feature_level='unigram'):
         features = "".join([word.lower() for word in features])
         features = features.replace(".", "")
         features = features.translate(str.maketrans('', '', string.punctuation))
+        features = features.replace('"', '')
+        features = features.replace('\n', '')
+        features = features.strip()
 
         if feature_level.lower() == 'unigram':
             features = [word for word in nltk.tokenize.word_tokenize(features)]
@@ -83,7 +87,12 @@ def count_matrix(features):
         feature_count.extend(feature_counter.values())
         index_point.append(len(feature_name))
 
-    return sp.csr_matrix((feature_count, feature_name, index_point), shape=(len(index_point) - 1, len(feature_dict)), dtype=np.int64).toarray()
+    matrix = sp.csr_matrix((feature_count, feature_name, index_point), shape=(len(index_point) - 1, len(feature_dict)),
+                           dtype=np.int64)
+    print([t for t, i in sorted(feature_dict.items(), key=itemgetter(1))])
+    print(matrix)
+    matrix = matrix.toarray()
+    return matrix
 
 
 def featureExtraction(texts, classes, feature_level='unigram'):
@@ -107,10 +116,17 @@ def LinearSVMClassifier(X,y,x_test,y_test):
     clf = LinearSVC(random_state=0).fit(X_resampled, y_resampled)
     y_pred = clf.predict(x_test).tolist()
     accuracyScore = clf.score(x_test, y_test)
-    print("************************************************************************")
+    # print("************************************************************************")
     print('Linear SVC accuracy score for test set=%0.2f' % accuracyScore)
-    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True, title='Linear SVC Normalized confusion matrix')
+    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True,
+                          title='Linear SVC Normalized confusion matrix')
     plt.show()
+    print("------------------------------------------------------------------------")
+    print("Confusion matrix, without normalization")
+    print(metrics.confusion_matrix(y_test, y_pred))
+    print("------------------------------------------------------------------------")
+    print(metrics.classification_report(y_test, y_pred))
+    print("------------------------------------------------------------------------")
     print("************************************************************************")
 
 
@@ -120,10 +136,17 @@ def ensembleClassifier(X,y,x_test,y_test):
     clf=RandomForestClassifier(n_estimators=10, random_state=0).fit(X_resampled, y_resampled)
     y_pred = clf.predict(x_test).tolist()
     accuracyScore = clf.score(x_test, y_test)
-    print("************************************************************************")
+    # print("************************************************************************")
     print('Ensemble Random Forest accuracy score for test set=%0.2f' % accuracyScore)
-    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True, title='Ensemble Random Forest Normalized confusion matrix')
+    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True,
+                          title='Ensemble Random Forest Normalized confusion matrix')
     plt.show()
+    print("------------------------------------------------------------------------")
+    print("Confusion matrix, without normalization")
+    print(metrics.confusion_matrix(y_test, y_pred))
+    print("------------------------------------------------------------------------")
+    print(metrics.classification_report(y_test, y_pred))
+    print("------------------------------------------------------------------------")
     print("************************************************************************")
 
 
@@ -133,10 +156,17 @@ def MultinomialNBClassifier(X,y,x_test,y_test):
     clf=MultinomialNB(alpha=1.0, fit_prior=True).fit(X_resampled, y_resampled)
     y_pred = clf.predict(x_test).tolist()
     accuracyScore = clf.score(x_test, y_test)
-    print("************************************************************************")
+    # print("************************************************************************")
     print('Multinomial Naive Bayes accuracy score for test set=%0.2f' % accuracyScore)
-    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True, title='Multinomial Naive Bayes Normalized confusion matrix')
+    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True,
+                          title='Multinomial Naive Bayes Normalized confusion matrix')
     plt.show()
+    print("------------------------------------------------------------------------")
+    print("Confusion matrix, without normalization")
+    print(metrics.confusion_matrix(y_test, y_pred))
+    print("------------------------------------------------------------------------")
+    print(metrics.classification_report(y_test, y_pred))
+    print("------------------------------------------------------------------------")
     print("************************************************************************")
 
 
@@ -146,10 +176,17 @@ def LogisticRegressionClassifier(X,y,x_test,y_test):
     clf=LogisticRegression(solver='lbfgs', multi_class='auto').fit(X_resampled, y_resampled)
     y_pred = clf.predict(x_test).tolist()
     accuracyScore = clf.score(x_test, y_test)
-    print("************************************************************************")
+    # print("************************************************************************")
     print('Logistic Regression accuracy score for test set=%0.2f' % accuracyScore)
-    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True, title='Logistic Regression Normalized confusion matrix')
+    plot_confusion_matrix(y_test, y_pred, classes=CLASS_NAMES, normalize=True,
+                          title='Logistic Regression Normalized confusion matrix')
     plt.show()
+    print("------------------------------------------------------------------------")
+    print("Confusion matrix, without normalization")
+    print(metrics.confusion_matrix(y_test, y_pred))
+    print("------------------------------------------------------------------------")
+    print(metrics.classification_report(y_test, y_pred))
+    print("------------------------------------------------------------------------")
     print("************************************************************************")
 
 
