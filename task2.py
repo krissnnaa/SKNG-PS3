@@ -1,72 +1,54 @@
-import nltk
-from sklearn.svm import LinearSVC
-from sklearn.ensemble import RandomForestClassifier
-from imblearn.over_sampling import RandomOverSampler
+"""
+Created on Sat April 6 01:12:48 2019
 
-def featureExtractionTask2():
+@author: sudhirsingh
 
-    with open('PS3_training_data.txt','r') as fd:
-        data=[l.strip().split('\t') for l in fd.readlines()]
+This is the code for task-2 problem set-3. The code works for multinomial classification.
+"""
 
-    featureWithLabel=[]
+import sys
+from ps3_util import PS3Util
+from ps3_classifier import PS3Classifier
+from sklearn.model_selection import train_test_split
 
-    for item in data:
-        innerFeature=[]
-        if item[-3]=='POSITIVE':
-            label=0
-        elif item[-3]=='NEGATIVE':
-            label=1
-        else:
-            label=2
-        tokens=nltk.tokenize.word_tokenize(item[1].lower())
-        health=0
-        product=0
-        review=0
-        if tokens[0] == 'i' or tokens[0] == 'im':
-            im = 1
-        else:
-            im = 0
 
-        for word in tokens:
-            if word.startswith('health'):
-                health=1
-            if word=='product':
-                product=1
-            if word.startswith('review'):
-                review=1
-        innerFeature.append(im)
-        innerFeature.append( health)
-        innerFeature.append(product)
-        innerFeature.append( review)
-        tupleFeature=[innerFeature,label]
-        featureWithLabel.append(tupleFeature)
-    return featureWithLabel
-    
-def LinearSVMClassifier(X,y,x_test,y_test):
+def perform_operations(file_name):
+    # file = 'data/PS3_training_data.txt'
+    data = open(file_name).read()
+    texts, classes = [], []
+    for idx, line in enumerate(data.split("\n")):
+        line_contents = line.split('\t')
+        if any(line_contents):
+            # text data
+            texts.append(line_contents[1])
+            # sentiment class
+            classes.append(line_contents[2])
+    del data
+    ps3 = PS3Util(texts=texts, classes=classes, feature_level='all')
+    labelFeature = ps3.featureExtraction(texts=texts, classes=classes, feature_level='all')
 
-    ros = RandomOverSampler(random_state=0)
-    X_resampled, y_resampled = ros.fit_resample(X, y)
-    clf=LinearSVC(random_state=0).fit(X_resampled, y_resampled)
-    clf.predict(x_test)
-    accuracyScore = clf.score(x_test, y_test)
-    print('Linear SVC accuracy score for test set=%0.2f' % accuracyScore)
+    X = [l[0] for l in labelFeature]
+    y = [l[1] for l in labelFeature]
 
-def ensembleClassifier(X,y,x_test,y_test):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+    ps3_classifier = PS3Classifier(X_train, y_train, X_test, y_test, ps3)
+    ps3_classifier.LinearSVMClassifier(X_train, y_train, X_test, y_test, ps3)
+    ps3_classifier.ensembleClassifier(X_train, y_train, X_test, y_test, ps3)
+    ps3_classifier.MultinomialNBClassifier(X_train, y_train, X_test, y_test, ps3)
+    ps3_classifier.LogisticRegressionClassifier(X_train, y_train, X_test, y_test, ps3)
 
-    ros = RandomOverSampler(random_state=0)
-    X_resampled, y_resampled = ros.fit_resample(X, y)
-    clf=RandomForestClassifier(n_estimators=10,random_state=0).fit(X_resampled, y_resampled)
-    clf.predict(x_test)
-    accuracyScore = clf.score(x_test, y_test)
-    print('Ensemble Random Forest  accuracy score for test set=%0.2f' % accuracyScore)
+
+def main():
+    if len(sys.argv) == 2:
+        file_name = sys.argv[1]
+    else:
+        file_name = input("Enter file name: ")
+
+    if file_name != '':
+        perform_operations(file_name)
+    else:
+        print("message file name empty")
 
 
 if __name__=='__main__':
-
-    labelFeature=featureExtractionTask2()
-    x_train = [l[0] for l in labelFeature]
-    y_train = [l[1] for l in labelFeature]
-    # Linear SVC
-    LinearSVMClassifier(x_train[:2000], y_train[:2000], x_train[2000:], y_train[2000:])
-    # Ensemble Random forest
-    ensembleClassifier(x_train[:2000], y_train[:2000], x_train[2000:], y_train[2000:])
+    main()
