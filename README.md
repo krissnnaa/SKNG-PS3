@@ -21,9 +21,9 @@ Requirements: Following modules are required in python 3 environment:
 
 Requirements files:
 The requirements.txt file contains all dependant libraries to be installed.
-To install all dependant libraries, please run the following command.
+To install all dependant libraries, please run the following command:
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 
 Command Line Execution:
